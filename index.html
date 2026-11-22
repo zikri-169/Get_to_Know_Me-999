@@ -11,13 +11,12 @@
 
   <style>
     :root {
-      --bg: #0a0a0c;
+      --bg: #09090b;
       --surface: #121215;
       --surface-hover: #18181c;
       --border: rgba(255, 255, 255, 0.08);
       --border-hover: rgba(255, 255, 255, 0.18);
       --accent: #f59e0b;
-      --accent-soft: rgba(245, 158, 11, 0.1);
       --green: #10b981;
       --text-main: #f4f4f5;
       --text-sub: #a1a1aa;
@@ -43,21 +42,30 @@
       line-height: 1.65;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
     }
 
-    /* Background Grid Sangat Halus di Bagian Atas Saja */
-    .top-grid-bg {
+    /* 1. Tekstur Noise / Grain Halus (Pengganti Kotak-kotak) */
+    .noise-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 520px;
-      background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 10%, transparent 100%);
-      -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 10%, transparent 100%);
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* 2. Ambient Light Lembut di Bagian Atas */
+    .ambient-light {
+      position: fixed;
+      top: -280px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 550px;
+      background: radial-gradient(ellipse at center, rgba(245, 158, 11, 0.075) 0%, rgba(56, 189, 248, 0.025) 45%, transparent 75%);
+      filter: blur(60px);
       pointer-events: none;
       z-index: 0;
     }
@@ -67,8 +75,8 @@
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(10, 10, 12, 0.8);
-      backdrop-filter: blur(14px);
+      background: rgba(9, 9, 11, 0.78);
+      backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
     }
 
@@ -136,13 +144,13 @@
       border-radius: 2px;
     }
 
-    /* Main Container yang Luas & Lega */
+    /* Main Container */
     main {
       position: relative;
       z-index: 1;
       max-width: 960px;
       margin: 0 auto;
-      padding: 72px 24px 120px;
+      padding: 76px 24px 120px;
     }
 
     .tab-panel {
@@ -238,7 +246,7 @@
       align-items: center;
       gap: 8px;
       padding: 12px 22px;
-      background: transparent;
+      background: rgba(255, 255, 255, 0.02);
       color: var(--text-main);
       font-size: 0.9rem;
       font-weight: 500;
@@ -253,7 +261,7 @@
       background: var(--surface);
     }
 
-    /* Info Strip (Tanpa Kotak Berat) */
+    /* Info Strip */
     .meta-strip {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -339,7 +347,7 @@
       font-family: var(--mono);
       font-size: 0.74rem;
       color: var(--text-sub);
-      background: var(--surface);
+      background: rgba(255, 255, 255, 0.03);
       padding: 4px 10px;
       border-radius: 6px;
       border: 1px solid var(--border);
@@ -355,15 +363,16 @@
     }
 
     .project-card {
-      background: var(--surface);
+      background: rgba(18, 18, 21, 0.65);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 28px;
-      transition: border-color 0.2s ease;
+      transition: border-color 0.2s ease, background 0.2s ease;
     }
 
     .project-card:hover {
       border-color: var(--border-hover);
+      background: var(--surface);
     }
 
     .project-num {
@@ -426,7 +435,7 @@
       color: var(--text-sub);
     }
 
-    /* Filterable Certificate List (Lebih Clean, Tidak Sesak) */
+    /* Filterable Certificate List */
     .cert-header {
       display: flex;
       justify-content: space-between;
@@ -489,7 +498,7 @@
     }
 
     .cert-row:hover {
-      background: var(--surface);
+      background: rgba(255, 255, 255, 0.03);
       padding-left: 18px;
     }
 
@@ -593,7 +602,7 @@
 
     .input-wrap input,
     .input-wrap textarea {
-      background: var(--surface);
+      background: rgba(18, 18, 21, 0.8);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 12px 14px;
@@ -702,7 +711,9 @@
 </head>
 <body>
 
-  <div class="top-grid-bg"></div>
+  <!-- Latar Belakang Subtle Grain & Ambient Light -->
+  <div class="noise-overlay"></div>
+  <div class="ambient-light"></div>
 
   <header>
     <div class="nav-container">
@@ -1003,7 +1014,7 @@
     <div class="modal-dialog" onclick="event.stopPropagation()">
       <div class="modal-head">
         <span id="modal-title" style="font-weight: 600; font-size: 0.95rem;">Certificate Preview</span>
-        <button class="close-modal modal-close" onclick="closeCert()">&times;</button>
+        <button class="modal-close" onclick="closeCert()">&times;</button>
       </div>
       <img id="cert-img" src="" alt="Preview Sertifikat">
     </div>
